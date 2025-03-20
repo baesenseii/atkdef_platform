@@ -1,0 +1,90 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+VAGRANTFILE_API_VERSION = "2"
+#
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "corertr"  
+  config.vm.network "public_network", bridge: "docker0", ip: "TARGET_GW_T1", netmask: "255.255.255.0"
+  config.vm.network "public_network", bridge: "docker0", ip: "TARGET_GW_T2", netmask: "255.255.255.0"
+  config.vm.network "public_network", bridge: "docker0", ip: "TARGET_GW_SB", netmask: "255.255.255.252"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  config.vm.box_check_update = false
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 4096
+    v.cpus = 1
+
+    # start off with --nic2 because first NIC will be used for NAT
+    v.customize ["modifyvm", :id, "--nic2", "intnet", "--intnet2", "INTF_T1"]
+    v.customize ["modifyvm", :id, "--nic3", "intnet", "--intnet3", "INTF_T2"]
+    v.customize ["modifyvm", :id, "--nic4", "intnet", "--intnet4", "INTF_SB"]
+
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+
+  # this will be a router, so will need to set IP forwarding
+  #sudo sysctl -p
+  sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt install -y net-tools iptables-persistent dnsmasq curl
+
+  # in addition, koth router will also join 4 networks (but need to install zerotier first)
+  echo "Before continuing with the zerotier setup, please ensure that you have the ZeroTier administration portal! You have 10 seconds.."
+  sleep 10
+  curl -s https://install.zerotier.com | sudo bash
+  echo "Joining Attacker Network Team 1! Authorise it in 2 minutes."
+  sudo zerotier-cli join ATTACKER_SUBNET_ZT_TEAM1
+  sleep 120
+  echo "Joining Attacker Network Team 2! Authorise it in 2 minutes."
+  sudo zerotier-cli join ATTACKER_SUBNET_ZT_TEAM2
+  sleep 120
+  echo "Joining Defender Network Team 1! Authorise it in 2 minutes."
+  sudo zerotier-cli join DEFENDER_SUBNET_ZT_TEAM1
+  sleep 120
+  echo "Joining Defender Network Team 2! Authorise it in 2 minutes."
+  sudo zerotier-cli join DEFENDER_SUBNET_ZT_TEAM2
+  sleep 120
+
+  sudo iptables --policy INPUT DROP
+  sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT # for vagrant access
+
+  GENERAL_NETWORK_ROUTES
+
+  TARGET_APP_ROUTES
+
+  DEFENSE_ROUTES
+
+  SCOREBOARD_ROUTES
+
+  # dhcp to be allowed across all networks
+  sudo iptables -A INPUT -p udp --dport 67 -j ACCEPT
+  sudo iptables -A INPUT -p udp --dport 68 -j ACCEPT
+
+  # allow established and related incoming connections
+  sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+  # save iptables configuration
+  sudo iptables-save | sudo tee /etc/iptables/rules.v4
+ 
+  # Set IP forwarding
+  sudo cp /vagrant/sysctlconf /etc/sysctl.conf
+  sudo sysctl -p
+  sudo sysctl -a
+
+  SHELL
+
+end

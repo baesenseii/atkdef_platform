@@ -1,0 +1,30 @@
+{
+    "TEAM1_DEETS":{
+        "ATTACKER_SUBNET":"192.168.193.0/24",
+        "ATTACKER_SUBNET_ZT":"12ac4a1e71978d06",
+        "DEFENDER_SUBNET":"10.147.19.0/24",
+        "DEFENDER_SUBNET_ZT":"8286ac0e47e01772",
+        "TARGET_SUBNET":"172.16.180.0/24",
+        "TARGET_ADAPTER":"t1-target"
+    },
+    "TEAM2_DEETS":{
+        "ATTACKER_SUBNET":"192.168.194.0/24",
+        "ATTACKER_SUBNET_ZT":"b15644912e0dc7ac",
+        "DEFENDER_SUBNET":"10.147.20.0/24",
+        "DEFENDER_SUBNET_ZT":"e4da7455b266b223",
+        "TARGET_SUBNET":"172.16.190.0/24",
+        "TARGET_ADAPTER":"t2-target"
+        
+    },
+    "OTHER_DEETS":{
+        "SCOREBOARD_SUBNET":"172.16.200.0/30",
+        "SCOREBOARD_ADAPTER":"scoreboard",
+        "PORTS": 
+        {
+            "attack":["80","8881","8080","3222","1337"],
+            "defense":["3222"],
+            "scoreboard":["80"]
+        },
+        "PLAYERS":["user1","user2","user3"]
+    }
+}       

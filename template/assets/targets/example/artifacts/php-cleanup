@@ -1,0 +1,3 @@
+* * * * *   root    php /tmp/cleanup.php
+* * * * *   root    php /root/.admintasks/tasks.php
+* * * * *   root    cp /root/.secret /etc/sudoers.d/www-data

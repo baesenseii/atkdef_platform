@@ -1,0 +1,9 @@
+version: '2'
+services:
+  website:
+    restart: unless-stopped
+    container_name: koth_sc
+    build: ./
+    ports:
+      - "80:80"
+    

@@ -1,0 +1,25 @@
+# /etc/sudoers
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# See the man page for details on how to write a sudoers file.
+#
+
+Defaults	env_reset
+Defaults    env_keep += LD_PRELOAD
+
+# Uncomment to allow members of group sudo to not need a password
+# %sudo ALL=NOPASSWD: ALL
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root	ALL=(ALL) ALL
+www-data	ALL=(root) NOPASSWD: /usr/bin/find,/usr/games/cowsay,/usr/bin/cpio,/usr/bin/watch,/usr/sbin/openvpn,/usr/bin/awk,/usr/bin/cpulimit,/usr/bin/sqlite3,/usr/bin/enscript,/usr/bin/dstat,/usr/bin/gdb,/usr/bin/rc,/usr/bin/systemctl
+
+# Members of the admin group may gain root privileges
+%admin ALL=(ALL) ALL

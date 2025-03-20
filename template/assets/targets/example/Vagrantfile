@@ -1,0 +1,47 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#######
+# NOTE: The following keywords are used within the Vagrantfile template when generating the project folder via generator.py:
+### APP_ADDRESS_HERE => for the IP address to be assigned by generator.py
+### TEAM_INTF => to specify the internal network name to be assigned by generator.py
+### ROUTES_HERE => the list of routes to be added by generator.py
+#######
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "target2"
+  config.vm.network "public_network", bridge: "docker0", ip: "APP_ADDRESS_HERE", netmask: "255.255.255.0"
+  
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+      # for testing purposes (on machine itself) --> start off with --nic2 because first NIC will be used for NAT
+      vb.customize ["modifyvm", :id, "--nic2", "intnet", "--intnet2", "TEAM_INTF"]
+  end
+  config.vm.provision "shell", inline: <<-SHELL
+
+apt update && apt install -y net-tools
+
+ROUTES_HERE
+
+  # Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get -y install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# run the docker compose command
+sudo docker compose -f /vagrant/docker-compose.yml up -d
+
+  SHELL
+end

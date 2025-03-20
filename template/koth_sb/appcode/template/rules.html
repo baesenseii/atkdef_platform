@@ -1,0 +1,211 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Language" content="en-us">
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+	<meta http-equiv="refresh" content="30" />
+	<title>WSS Day 3 CTF</title>
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom CSS -->
+	<link href="css/propane.css" rel="stylesheet">
+
+	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+		<div class="container topnav">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+	                    <span class="sr-only">Toggle navigation</span>
+	                    <span class="icon-bar"></span>
+	                    <span class="icon-bar"></span>
+	                    <span class="icon-bar"></span>
+	                </button>
+				<a class="navbar-brand topnav" href="#">
+					<div class="icon-div-1">
+					<img src="./images/cdf-redteam.png" width="50px" height="50px" class="img-responsive">
+					</div>
+					<div class="icon-div-1">
+						<img src="./images/logo-wss.png" width="50px" height="50px" class="img-responsive">
+						</div>
+				</a>
+			</div>
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a href="index.html">Scores</a>
+					</li>
+					<li>
+						<a href="rules.html">Rules</a>
+					</li>
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+		</div>
+		<!-- /.container -->
+	</nav>
+
+
+	<div class="intro-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="intro-message">
+						<h1>Rules</h1>
+					</div>
+				</div>
+			</div>
+			
+			<b><u><h4>Introduction</h4></u></b>
+			<p align="justify">
+			For this CTF, it is currently divided into two parts: 'Attack' and 'Defense'. The attack part of the challenge involves exploiting a target system or application to gain access to sensitive data or perform unauthorized actions. The defense part involves defending the target system or application from the attacks performed by the other teams.
+			</p>
+			<br>
+			<b><u><h4>Competition Layout</h4></u></b>
+			<p align="justify">
+			To start off, here's the overview of the CTF network diagram:<br><br>
+			<img src="./images/koth-ctf-netdiagram.png" width="550px" height="770px" class="img-responsive center-block">
+			<br>
+			Each team currently has the following assets:
+			<br>
+			<ul>
+				<li>Target servers (dockerised) that contain a series of vulnerabilities</li>
+				<li>1x Wazuh SIEM dashobard server (note that all 4 servers have the Wazuh agents installed);</li>
+				<li>2x laptops installed with a Linux VM to access the Wazuh SIEM dashboard and SSH management (root access) to the 5 servers via private key authentication; </li>
+			</ul>
+			<br>
+			<div class="red-team-briefing">
+			<b><u><h4>Red Team Element Briefing</h4></u></b>
+			<h5><u><i>Overview</i></u></h5>
+			<p align="justify"></p>
+			As a red team element, your mission (should you choose to accept it) is to gain access through the opposing team's servers through the various vulnerable services and web applications. To mimic the real-world scenario of an actual red team engagement, the following items will be provided to you:
+			<br><br>
+			<ul>
+				<li>You will only be using your OWN equipment (minimally a Kali Linux VM with ZeroTier). If you think you require additional tools, feel free to customise;</li><br>
+				<li>You are also allowed to use the School WiFi to search for Internet resources and aid you in your engagement which also includes ChatGPT and Google. <br><br>However, be warned that due to the nature of your search, some results might be blocked by the school, so tread carefully.</li><br>
+			</ul>
+			<h5><i><u>Team Scoring</u></i></h5>
+			Each team has been designated with the following subnets to attack (refer to the list below):<br><br>
+			<ul>
+				<li>Team 1 (Ashwin, Chuan Qian) - Worldskills Team: 172.16.190.0/24</li>
+				<li>Team 2 (kurasama, lzx, faint): 172.16.180.0/24</li>
+			</ul>
+			For every 30s, a scoreboard system will be used to poll all 8 targets on their status. In order for the team to score, you will need to add a custom tag within the vulnerable website code (index.php/index.html or equivalent) with your team member's name on it. For example:
+			<br>
+			<br>
+			<div class="codeblock">
+			&lt;team&gt;mrhamzah&lt;/team&gt;
+			</div>
+			<br>
+			<br>
+			Once the scoreboard manages to identify the tag when polling each target, the scoreboard will identify the value set to the tag and the point will be awarded accordingly. Do take note that in order to increase the score, you MUST ENSURE that the tag stays within the webcode AS LONG AS POSSIBLE :)
+			<br>
+			<br>Do take note of the list of tag names that are allowed within the scoreboard system:<br>
+			<ul>
+				<li>Team 1</li>
+				<ul>
+					<li>chuanqian</li>
+					<li>ashwin</li>
+				</ul><br>
+				<li>Team 2</li>
+				<ul>
+					<li>kurasama</li>
+					<li>lzx</li>
+					<li>faint</li>
+				</ul>
+			</ul>
+			<br>
+			<h5><i><u>Rules of Engagement</u></i></h5>
+			In order to have a smooth experience while playing the CTF, the following actions are <b><u>NOT PERMITTED</u></b> for the red teamers:<br><br>
+			<ul>
+				<li>Distributed Denial of Service (DDoS) attacks (for e.g Ping Floods, Slowlorris Attack, etc) on any of the networks (including the RedTeam network);</li><br>
+				<li> Network/vulnerability scans, DDoS attacks on the scoreboard server (172.16.200.2/30) are not allowed.</li>
+			</ul>
+			</p>
+			<br>
+			<h5><i><u>Red Team Tips</u></i></h5>
+			<ul>
+				<li>As usual, aim for root :)</li><br>
+				<li>Once you're in, figure out a way to STAY inside.</li><br>
+				<li>Remember that now there are defenders that can watch your every move through the SIEM, so be careful of what you do.</li><br>
+			</ul>
+		</div>
+
+			<div class="blue-team-briefing">
+			<b><u><h4>Blue Team Element Briefing</h4></u></b>
+			<p align="justify">
+			<h5><u><i>Overview</i></u></h5>
+			As a blue team element, you are responsible for the safety and security of your systems by ensuring that the red team does not gain access into your systems and compromise them. To mimic the real-world scenario, the following items will be provided to you:
+			<ul><br>
+				<li>2x Laptops (set with static IP address, NO INTERNET ACCESS) that also contains the master SSH key to all 4 systems + Wazuh Vagrant VM;</li><br>
+				<li>1x Wazuh SIEM Dashboard Manager that has already been preconfigured with all the logs coming in from the 4 systems.</li><br>
+			</ul>
+			<h5><u><i>Defense Hardening & Implementation Rules</i></u></h5>
+			Each team has been designated with specific IP addresses to defend (refer to the list below):<br><br>
+			<ul>
+				<li>Team 1 (Chuan Qian, Ashwin)
+					<ul>
+						<li>Wazuh SIEM (username: admin, password: SecretPassword): https://10.147.19.137</li>
+					</ul>
+				</li>
+				<li>Team 2 (kurasama, faint, lzx)
+					<ul>
+						<li>Wazuh SIEM (username: admin, password: SecretPassword): https://10.147.20.137</li>
+					</ul>
+				</li>
+			</ul>
+			The provided master SSH key can be used to access the managed systems by using the following Linux command:
+			<br><br>
+			<div class="codeblock">
+				ssh -i master.key -p2322 root@ip_address_of_server
+			</div>
+			<br><br>
+			While in the respective systems, you are allowed to:
+			<ul><br>
+				<li>Review the existing configuration of the systems and harden them accordingly; </li><br>
+				<li>Remove/kill any existing connections that may have been established by the red team elements. </li><br>
+			</ul>
+			However, as a blue team element, you are <b><u>NOT ALLOWED</u></b> to do the following:
+			<ul><br>
+				<li><b><u>Modify</u></b> the web application source code;</li><br>
+				<li>Intentionally turning off the <b><u>HTTP and XINETD</u></b> service on the systems;</li><br>
+				<li>Adding iptable rules to block <b><u>any of the subnets</u></b> (including the attacker network).</li>
+			</ul>
+			<br>
+		<h5><i><u>Blue Team Tips</u></i></h5>
+		<ul>
+			<li>Do orientate yourself with Wazuh in terms of the logs that are being synced to the dashboard.</li><br>
+			<li>To harden properly, put yourself in the shoes of an attacker. What would you do if you see such configurations in place?</li><br>
+			<li>On the bright side, at least your team has BOTH red and blue team elements :)</li><br>
+		</ul>
+			</p>
+			
+		</div>
+
+		</div>
+
+	</div>
+
+	<!-- jQuery -->
+	<script src="js/jquery.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/bootstrap.min.js"></script>
+
+
+</body>
+
+</html>

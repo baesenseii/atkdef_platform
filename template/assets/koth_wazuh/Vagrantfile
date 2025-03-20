@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "TEAM_NAME"
+  config.vm.disk :disk, size: "100GB", primary: true
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "8192"
+  end
+  config.vm.provision "shell", inline: <<-SHELL
+
+# in addition, koth router will also join 4 networks (but need to install zerotier first)
+echo "Before continuing with the zerotier setup, please ensure that you have the ZeroTier administration portal! You have 10 seconds.."
+sleep 10
+curl -s https://install.zerotier.com | sudo bash
+
+
+ZT_DEFENSE_NETWORK
+
+apt update && apt install -y net-tools
+
+ROUTES_HERE
+
+
+  # Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get -y install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# for ssh maintenance (defender)
+cat /vagrant/artifacts/key.pub >> /home/vagrant/.ssh/authorized_keys
+chmod 400 /home/vagrant/.ssh/authorized_keys
+
+# run the docker compose command
+sudo docker compose -f /vagrant/docker-compose.yml up -d
+
+  SHELL
+end
